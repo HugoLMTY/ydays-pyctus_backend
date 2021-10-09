@@ -23,7 +23,7 @@ const userSchema = new Schema({
 	isStaff:		{ type: Boolean, default: false },
 	isBDS:			{ type: Boolean, default: false },
 	isBDE:			{ type: Boolean, default: false },
-	isAnel:			{ type: Boolean, default: false },
+	isAngel:		{ type: Boolean, default: false },
 	isAdmin:		{ type: Boolean, default: false },
 
 	hasCertifiedPhone:	{ type: Boolean, default: false },

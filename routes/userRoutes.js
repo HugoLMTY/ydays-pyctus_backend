@@ -15,6 +15,9 @@ router.route('/all')
 	.get(userController.getAllUsers)
 	.post(userController.getAllUsers)
 
+router.route('/create')
+	.post(userController.createUser)
+
 
 router.route('/profile/:userId')
 	.get(userController.getUserByEmail)
@@ -23,4 +26,7 @@ router.route('/profile/:userId')
 router.route('/mail')
 	.post(userController.getUserByEmail)
 
+
+router.route('/update/:userId')
+	.post(userController.updateUserById)
 module.exports = router

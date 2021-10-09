@@ -68,8 +68,8 @@ class dataService {
 
 		//#region ------------ UPDATE
 
-		updateUserById(id, changes) {
-			return User.findByIdAndUpdate(id, changes)
+		async updateUserById(id, changes) {
+			return await User.findByIdAndUpdate(id, changes)
 		}
 
 		//#endregion

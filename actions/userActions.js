@@ -41,6 +41,24 @@ class userActions {
 			res.status(200).send(user)
 		} catch(err) { this.handleErrp(err, res) }
 	}
+
+	async createUser(datas, res) {
+		this.log('CREATE USER')
+		try {
+			const user = await dataService.createUser(datas)
+
+			res.status(200).send(user)
+		} catch(err) { this.handleErrp(err, res) }
+	}
+
+	async updateUserById(userId, changes, res) {
+		this.log('UPDATE USER')
+		try {
+			const user = await dataService.updateUserById(userId, changes)
+
+			res.status(200).send(user)
+		} catch(err) { this.handleErrp(err, res) }
+	}
 }	
 
 module.exports = new userActions()

@@ -24,10 +24,13 @@ const postSchema = new Schema({
 		'cursus',
 		'student',
 		'bde/bds',
-		'angel'
+		'angel',
 	]},
 
 	target: {
+
+		group: 	{ type: ObjectId, ref: 'Group' },
+
 		level: [{
 			b1:	{ type: Boolean, default: true },
 			b2:	{ type: Boolean, default: true },

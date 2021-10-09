@@ -9,7 +9,8 @@ const groupSchema = new Schema({
 	description:	{ type: String },
 
 	owner:			{ type: ObjectId, ref: 'User' },
-	createdAt:		{ type: Date },
+	createdAt:		{ type: Date 	},
+	type:			{ type: String 	},
 
 	participants:	[{
 		user:		{ type: ObjectId, ref: 'User' },

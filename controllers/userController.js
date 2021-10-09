@@ -14,3 +14,14 @@ exports.getUserByEmail = (req, res) => {
 	const { email } = req.body
 	actions.getUesrByEmail(email, res)
 }
+
+exports.createUser = (req, res) => {
+	const datas = req.body
+	actions.createUser(datas, res)
+}
+
+exports.updateUserById = (req, res) => {
+	const { userId } = req.params
+	const changes = req.body
+	actions.updateUserById(userId, changes, res)
+}
