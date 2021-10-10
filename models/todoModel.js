@@ -52,4 +52,4 @@ todoSchema.method.togglePublic = function() {
 todoSchema.index({ location: '2d' })
 todoSchema.plugin(mongoosePaginate)
 
-module.exports = mongoose.mongo.model('Todo', todoSchema)
+module.exports = mongoose.model('Todo', todoSchema)

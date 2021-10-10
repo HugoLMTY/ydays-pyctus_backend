@@ -18,15 +18,15 @@ router.route('/all')
 router.route('/create')
 	.post(userController.createUser)
 
-
-router.route('/profile/:userId')
-	.get(userController.getUserByEmail)
-
-
-router.route('/mail')
+router.route('/email')
 	.post(userController.getUserByEmail)
 
 
 router.route('/update/:userId')
 	.post(userController.updateUserById)
+
+
+router.route('/:userId')
+	.get(userController.getUserByEmail)
+
 module.exports = router

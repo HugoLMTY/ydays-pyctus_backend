@@ -44,4 +44,4 @@ canvaSchema.method.checkDepth = function() {
 canvaSchema.index({ location: '2dsphere' })
 canvaSchema.plugin(mongoosePaginate)
 
-module.exports = mongoose.mongo.model('Canva', canvaSchema)
+module.exports = mongoose.model('Canva', canvaSchema)

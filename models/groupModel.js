@@ -50,4 +50,4 @@ const groupSchema = new Schema({
 groupSchema.index({ location: '2dsphere'})
 groupSchema.plugin(mongoosePaginate)
 
-module.exports = mongoose.mongo.model('Group', groupSchema)
+module.exports = mongoose.model('Group', groupSchema)

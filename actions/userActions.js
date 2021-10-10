@@ -33,7 +33,7 @@ class userActions {
 		} catch(err) { this.handleError(err, res) }
 	}
 
-	async getUesrByEmail(email, res) {
+	async getUserByEmail(email, res) {
 		this.log('GET USER BY EMAIL')
 		try {
 			const user = await dataService.getUserByEmail(email)

@@ -12,7 +12,7 @@ exports.getUserById = (req, res) => {
 
 exports.getUserByEmail = (req, res) => {
 	const { email } = req.body
-	actions.getUesrByEmail(email, res)
+	actions.getUserByEmail(email, res)
 }
 
 exports.createUser = (req, res) => {

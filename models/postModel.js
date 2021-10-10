@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const mongoosePaginate = require('mongoosePaginate')
+const mongoosePaginate = require('mongoose-paginate')
 const Schema = mongoose.Schema
 const ObjectId = Schema.Types.ObjectId
 
@@ -7,17 +7,19 @@ const postSchema = new Schema({
 
 	author:		{ type: ObjectId, ref: 'User'	},
 
-	isActive:	{ type: Boolean },
+	isActive:	{ type: Boolean, default: true },
 
-	title: 		{ type: String	},
-	content:	{ type: String	},
+	title: 		{ type: String, default: 'Nouveau post'		},
+	content:	{ type: String, default: 'Contenu du post'	},
 
-	hasImages:	{ type: Boolean	},
+	hasImages:	{ type: Boolean	, default: false},
 	images:		[{ type: String	}],
 
-	differed:	{ type: Boolean	},
-	toPostAt:	{ type: Date	},
+	createdAd:	{ type: Date, default: new Date()	},
 	postedAt: 	{ type: Date	},
+
+	differed:	{ type: Boolean, default: false		},
+	toPostAt:	{ type: Date	},
 
 	postAs: { type: String, enum: [
 		'staff',
@@ -25,11 +27,15 @@ const postSchema = new Schema({
 		'student',
 		'bde/bds',
 		'angel',
-	]},
+	], default: 'student'},
 
 	target: {
 
-		group: 	{ type: ObjectId, ref: 'Group' },
+		group: 		{ type: ObjectId, ref: 'Group'	},
+		isGroup:	{ type: Boolean, default: false	},
+
+		channel:	{ type: ObjectId, ref: 'Channel'},
+		isChannel:	{ type: Boolean, default: false	},
 
 		level: [{
 			b1:	{ type: Boolean, default: true },
@@ -63,6 +69,7 @@ const postSchema = new Schema({
 		}],
 	},
 
+	allowComments:	{ type: Boolean, default: true },
 	comments: [{
 		user: 		{ type: ObjectId, ref: 'User' },
 		content: 	{ type: String	},
@@ -72,6 +79,7 @@ const postSchema = new Schema({
 		}]
 	}],
 
+	allowReactions:	{ type: Boolean, default: true },
 	reactions:	[{
 		user:	{ type: ObjectId, ref: 'User' },
 		type:	{ type: String	}
@@ -82,4 +90,4 @@ const postSchema = new Schema({
 postSchema.index({ location: '2dsphere' })
 postSchema.plugin(mongoosePaginate)
 
-module.exports = mongoose.mongo.model('Post', postSchema)
+module.exports = mongoose.model('Post', postSchema)

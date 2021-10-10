@@ -67,4 +67,4 @@ eventSchema.method.getPlacesLeft = function() {
 eventSchema.index({ location: '2dsphere' })
 eventSchema.plugin(mongoosePaginate)
 
-module.exports = mongoose.mongo.model('Event', eventSchema)
+module.exports = mongoose.model('Event', eventSchema)

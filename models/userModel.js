@@ -10,15 +10,18 @@ const userSchema = new Schema({
 	firstName: 	{ type: String, required: true },
 	lastName: 	{ type: String, required: true },
 	sex:		{ type: String	},
-	birthDate:	{ type: Date 	},
+	birthdate:	{ type: Date 	},
 	phone:		{ type: Number 	},
 
-	email: 			{ type: String, required: true },
-	password: 		{ type: String, required: true },
+	email: 		{ type: String, required: true },
+	password: 	{ type: String, required: true },
 
-	description:	{ type: String },
+	desc:		{ type: String },
 
 	isActive: 		{ type: Boolean, default: true 	},
+
+	isDelegue:		{ type: Boolean, default: false },
+
 	isCertified: 	{ type: Boolean, default: false },
 	isStaff:		{ type: Boolean, default: false },
 	isBDS:			{ type: Boolean, default: false },
@@ -29,8 +32,8 @@ const userSchema = new Schema({
 	hasCertifiedPhone:	{ type: Boolean, default: false },
 	hasCertifiedMail:	{ type: Boolean, default: false },
 
-	registeredAt: 	{ type: Date 	},
-	lastConnection: { type: Date 	},
+	registeredAt: 	{ type: Date, default: new Date() },
+	lastConnection: { type: Date, default: new Date() },
 
 	situation: {
 		studentSince: 	{ type: Date   	},
