@@ -1,8 +1,12 @@
-const User = require('../models/userModel')
-const Post = require('../models/postModel')
+const User 		= require('../models/userModel')
+const Post 		= require('../models/postModel')
+const Channel 	= require('../models/channelModel')
+const Event 	= require('../models/eventModel')
 
-const populateUser = "posts friends follows events"
-const populatePost = "author target comments reactions"
+const populateUser = `posts.post channels friends.sent friends.received friends.accepted follows.following.user follows.followed.user`
+const populatePost = `author target.group target.channel comments.users comments.reactions.user reactions.user`
+const populateEvent = `owner participants.user`
+const populateChannel = `author admins.user admins.from members.user posts.post`
 
 const bcrypt = require('bcrypt')
 
@@ -23,14 +27,14 @@ class dataService {
 				password,
 			} = datas
 
-			var $pwd = bcrypt.hash(password, 10) 
+			var $pwd = await bcrypt.hash(password, 10)
 
 			try {
 				const newUser = new User({
 					firstName,
 					lastName,
 					email,
-					$pwd,
+					password: $pwd,
 				})
 
 				const user = await newUser.save()
@@ -41,42 +45,38 @@ class dataService {
 
 		//#region ------------ GET
 		async getAllUsers(params = {}, populated = true) {
-			let fields = populated ? populatePost : {}
-			
-			const query = await User
-				.find(params)
-				.populate(fields)
-				.exec()
+			const query = User.find(params)
 
-			return query
+			return !populated ? query : query
+				.populate(populateUser)
+				.exec()
 		}
 
-		async getUserById(id, populated = true) {
-			let fields = populated ? populatePost : {}
-			
-			const query = await User
-				.findById(id)
-				.populate(fields)
+		getUserById(id, populated = true) {
+			const query = User.findById(id)
+
+			return !populated ? query : query
+				.populate(populateUser)
 				.exec()
 
-			return query
 		}
 
 		async getUserByEmail(email, populated = true) {
-			let fields = populated ? populatePost : {}
-			
-			const query = await User
-				.find({ email })
-				.populate(fields)
-				.exec()
+			const query = User.findOne({ email })
 
-			return query
+			return !populated ? query : query
+				.populate(populateUser)
+				.exec()
 		}
 		// #endregion
 
 		//#region ------------ UPDATE
-		async updateUserById(id, changes) {
-			return await User.findByIdAndUpdate(id, changes)
+		async updateUserById(id, changes, populated = true) {
+			const query = await User.findByIdAndUpdate(id, changes)
+
+			return !populated ? query : query
+				.populate(populateUser) 
+				.exec()
 		}
 		//#endregion
 	//#endregion
@@ -102,8 +102,8 @@ class dataService {
 
 			try {
 				const newPost = new Post({
-					author: '61606061904cd5dd814d32b7',
-					// author: userId,
+					// author: '61606061904cd5dd814d32b7',
+					author: userId,
 
 					isActive: true,
 
@@ -132,59 +132,220 @@ class dataService {
 
 		//#region GET
 		async getAllPosts(params, populated = true) {
-			let fields = populated ? populatePost : {}
+			const query = await Post.find(params)
 
-			const query = await Post
-				.find(params)
+			return !populated ? query : query
 				.populate(fields)
 				.exec()
-
-			return query
 		}
 
 		async getPostById(postId, populated = true) {
-			let fields = populated ? populatePost : {}
+			const query = await Post.findById(postId)
 
-			const query = await Post
-				.findById(postId)
+			return !populated ? query : query
 				.populate(fields)
 				.exec()
 
-			return query
 		}
 
-		async getPostsByAuthorId(authorId) {
-			const query = await Post
-				.find({ author: authorId})
-				.populate(populatePost)
-				.exec()
-
-			return query
+		async getPostsByAuthorId(authorId, populated = true) {
+			const query = await Post.find({ author: authorId})
+				
+				return !populated ? query : query
+					.populate(populatePost)
+					.exec()
 		}
 		//#endregion
 
 		//#region UPDATE
 		async updatePostById(postId, changes, populated = true) {
-			let fields = populated ? populatePost : {}
 
-			const query = await Post
-				.findByIdAndUpdate(postId, changes)
-				.populate(fields)
-				.exec()
+			const query = await Post.findByIdAndUpdate(postId, changes)
 
-			return query
-		}
-
-		async updatePostsByAuthorId(authorId, changes) {
-			const query = await Post
-				.updateMany({ author: authorId }, changes)
+			return !populated ? query : query
 				.populate(populatePost)
 				.exec()
+		}
 
-			return query
+		async updatePostsByAuthorId(authorId, changes, populated = true) {
+			const query = await Post.updateMany({ author: authorId }, changes)
+
+			return !populated ? query : query
+				.populate(populatePost)
+				.exec()
 		}
 		//#endregion
 	//#endregion
+
+
+	//#region ------------ CHANNEL
+		//#region CREATE
+		async createChannel(userId, datas) {
+			const {
+				title,
+				desc,
+				icon
+			} = datas
+
+			try {
+				const newChannel = new Channel({
+					title,
+					desc,
+					icon,
+
+					owner: userId,
+					createdAt: new Date(),
+
+					admins: [],
+
+					members: [{
+						user: userId,
+						role: 'admin'
+					}]
+				})
+
+				const channel = await newChannel.save()
+				return channel
+			} catch(err) { this.handleError(err) }
+
+		}
+		//#endregion
+
+		//#region GET
+		async getAllChannels(params = {}, populated = true) {
+			const query = Channel.find(params)
+
+			return !populated ? query : query 
+			.populate(populateChannel)
+			.exec()
+		}
+
+		async getChannelById(channelId, populated = true) {
+			const query = Channel.findById(channelId)
+
+			return !populated ? query : query 
+			.populate(populateChannel)
+			.exec()
+		}
+
+		async getChannelsByOwnerId(ownerId, populated = true) {
+			const query = Channel.find({ owner: ownerId })
+
+			return !populated ? query : query 
+			.populate(populateChannel)
+			.exec()
+		}
+		//#endregion
+
+		//#region UPDATE
+		async updateChannelById(channelId, changes, populated = true) {
+			const query = Channel.findByIdAndUpdate(channelId, changes)
+
+			return !populated ? query : query
+				.populate(populateChannel)
+				.exec()
+		}
+
+		async updateChannelsByOwnerId(ownerId, changes, populated = true) {
+			const query = Channel.updateMany({ owner: ownerId }, changes)
+
+			return !populated ? query : query
+				.populate(populateChannel)
+				.exec()
+		}
+		//#endregion
+	//#endregion
+
+
+	//#region ------------ EVENTS
+		//#region CREATE
+		async createEvent(ownerId, datas) {
+			const {
+				title,
+				desc,
+
+				type,
+				location,
+
+				openAt,
+				closeAt,
+
+				startAt,
+				endAt,
+
+				offers
+			} = datas
+
+			try {
+				const newEvent = new Event({
+					title,
+					desc,
+
+					type,
+					location,
+
+					owner: ownerId,
+
+					openAt,
+					closeAt,
+
+					startAt,
+					endAt,
+
+					offers
+				})
+
+				const event = await newEvent.save()
+				return event
+			} catch(err) { this.handleError(err) }
+		}
+		//#endregion
+
+		//#region GET
+		async getAllEvents(params = {}, populated = true) {
+			const query = Event.find(params)
+
+			return !populated ? query : query
+				.populate(populateEvent)
+				.exec()
+		}
+
+		async getEventById(eventId, populated = true) {
+			const query = Event.findById(eventId)
+
+			return !populated ? query : query
+				.populate(populateEvent)
+				.exec()
+		}
+
+		async getEventsByOwnerId(ownerId, populated = true) {
+			const query = Event.find({ owner: ownerId })
+
+			return !populated ? query : query
+				.populate(populateEvent)
+				.exec()
+		}
+		//#endregion
+
+		//#region UPDATE
+		async updateEventById(eventId, changes, populated = true) {
+			const query = await Event.findByIdAndUpdate(eventId, changes)
+
+			return !populated ? query : query
+				.populate(populateEvent)
+				.exec()
+		}
+
+		async updateEventsByOwnerId(ownerId, changes, populated = true) {
+			const query = await Event.updateMany({ owner: ownerId}, changes)
+
+			return !populated ? query : query
+				.populate(populateEvent)
+				.exec()
+		}
+		//#endregion
+	//#endregion
+
 
 
 	//#region ------------ TYPE

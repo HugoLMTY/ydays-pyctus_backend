@@ -11,8 +11,8 @@ exports.getUserById = (req, res) => {
 }
 
 exports.getUserByEmail = (req, res) => {
-	const { email } = req.body
-	actions.getUserByEmail(email, res)
+	const { userEmail } = req.params
+	actions.getUserByEmail(userEmail, res)
 }
 
 exports.createUser = (req, res) => {

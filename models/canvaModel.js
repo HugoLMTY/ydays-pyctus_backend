@@ -8,13 +8,14 @@ const canvaSchema = new Schema({
 	title: 		{ type: String },
 	content: 	{ type: String },
 
+	isActive:	{ type: Boolean, default: true },
+
 	onwer:		{ type: ObjectId, ref: 'User', required: true },
 	createdAt:	{ type: Date },
 	updatedAt:	{ type: Date },
 
-	child: 		[{ type: ObjectId, ref: 'Todo', default: null }],
-	parent: 	{ type: ObjectId, ref: 'Todo', default: null },
-	maxDepth:	{ type: Number },
+	child: 		[{ type: ObjectId, ref: 'Canva', default: null }],
+	parent: 	{ type: ObjectId, ref: 'Canva', default: null },
 
 	color:		{ type: String },
 
@@ -26,7 +27,7 @@ const canvaSchema = new Schema({
 	
 })
 
-canvaSchema.method.getDepth = function() {
+canvaSchema.methods.getDepth = function() {
 	let count
 
 	while (this.parent) {
@@ -37,8 +38,21 @@ canvaSchema.method.getDepth = function() {
 	return count
 }
 
-canvaSchema.method.checkDepth = function() {
-	return this.getDepth < this.maxDepth
+canvaSchema.methods.checkDepth = function(userMaxDepth) {
+	return this.getDepth < userMaxDepth
+}
+
+canvaSchema.methods.toggleActive = function() {
+	this.isActive = !this.isActive
+}
+
+canvaSchema.methods.setInactive = function() {
+	try {
+		this.isActive = false
+
+		this.save()
+		return this
+	} catch(err) { return err }
 }
 
 canvaSchema.index({ location: '2dsphere' })

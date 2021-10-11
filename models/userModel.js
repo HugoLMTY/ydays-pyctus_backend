@@ -10,18 +10,20 @@ const userSchema = new Schema({
 	firstName: 	{ type: String, required: true },
 	lastName: 	{ type: String, required: true },
 	sex:		{ type: String	},
-	birthdate:	{ type: Date 	},
-	phone:		{ type: Number 	},
+	birthdate:	{ type: Date	},
+	phone:		{ type: Number	},
+	desc:		{ type: String	},
 
 	email: 		{ type: String, required: true },
 	password: 	{ type: String, required: true },
 
-	desc:		{ type: String },
+	isOnline:	{ type: Boolean },
 
 	isActive: 		{ type: Boolean, default: true 	},
+	isBanned:		{ type: Boolean, default: false	},
+	banReason:		{ type: String },
 
 	isDelegue:		{ type: Boolean, default: false },
-
 	isCertified: 	{ type: Boolean, default: false },
 	isStaff:		{ type: Boolean, default: false },
 	isBDS:			{ type: Boolean, default: false },
@@ -37,7 +39,7 @@ const userSchema = new Schema({
 
 	situation: {
 		studentSince: 	{ type: Date   	},
-		level:			{ type: String, enum: ['b1', 'b2', 'b3', 'm1', 'm2' ]},
+		level:			{ type: String, enum: ['b1', 'b2', 'b3', 'm1', 'm2', 'staff' ]},
 		cursus:			{ type: String, enum: ['info', 'crea', 'marcom', 'audiovisuel', '3d' ]},
 		campus:			{ type: String, enum: ['lille', 'paris', 'rennes', 'nantes', 'lyon', 'bordeaux', 'montpellier', 'nice', 'toulouse', 'aix', 'rabat', 'casablanca']}
 	},
@@ -47,6 +49,8 @@ const userSchema = new Schema({
 		postedAt:	{ type: Date 	},
 		isShared:	{ type: Boolean },
 	}],
+
+	channels: [{ type: ObjectId, ref: 'Channel' }],
 
 	friends: {
 		sent: 		[{ type: ObjectId, ref: 'User' }],
@@ -59,7 +63,6 @@ const userSchema = new Schema({
 		rank: 	{ type: Number }
 	}],
 
-
 	follows: {
 		following: 	[{
 			since: 	{ type: Date 				 	},
@@ -71,11 +74,12 @@ const userSchema = new Schema({
 		}],
 	},
 
-
 	events: [{
-		event: 			{ type: ObjectId, ref: 'Event' },
-		registeredAt: 	{ type: Date 	},
 		isActive: 		{ type: Boolean },
+		event: 			{ type: ObjectId, ref: 'Event' },
+
+		isOwner:		{ type: Boolean },
+		registeredAt: 	{ type: Date 	},
 
 		guests: {
 			firstName:	{ type: String },
@@ -84,36 +88,99 @@ const userSchema = new Schema({
 			isUser:		{ type: String },
 			user:		{ type: ObjectId, ref: 'User' }
 		}
-	}]
+	}],
+
+	canvas: [{
+		maxDepth:	{ type: Number, default: 10			},
+		canva:		{ type: ObjectId, ref: 'Canva' 		}
+	}],
+
+	todoList: [{ 
+		todo:		{ type: ObjectId, ref: 'Todo' 	},
+		maxItems:	{ type: Number, default: 5 		} 
+	}],
+
 })
 
-userSchema.method.comparePassword = function(pwd) {
-	return bcrypt.compare(this.password, pwd)
+userSchema.methods.comparePassword = async function(pwd) {
+	return await bcrypt.compare(pwd, this.password)
 }
 
-userSchema.method.toggleAdmin = function() {
-	this.isAdmin = !this.isAdmin
-	return this.save()
+userSchema.methods.postCount = function() {
+	return this.posts.length
 }
 
-userSchema.method.toggleActive = function() {
-	this.isActive = !this.isActive
-	return this.save()
+userSchema.methods.countElements = function() {
+	return {
+		posts: 		this.posts.length,
+		channels: 	this.channels.length,
+		friends:	this.friends.accepted.length,
+		events: 	this.events.length,
+		follows:	this.follows.following.length,
+	}
 }
 
-userSchema.method.toggleCertified = function() {
-	this.isCertified = !this.isCertified
-	return this.save()
+userSchema.methods.toggleAdmin = function() {
+	try {
+		this.isAdmin = !this.isAdmin
+
+		this.save()
+		return this 
+	} catch(err) { return err }
 }
 
-userSchema.method.toggleHasPhone = function() {
-	this.hasCertifiedPhone = !this.hasCertifiedPhone
-	return this.save()
+userSchema.methods.toggleActive = function() {
+	try {
+		this.isActive = !this.isActive
+
+		this.save()
+		return this 
+	} catch(err) { return err }
 }
 
-userSchema.method.toggleHasMail = function() {
-	this.hasCertifiedMail = !this.hasCertifiedMail
-	return this.save()
+userSchema.methods.toggleCertified = function() {
+	try {
+		this.isCertified = !this.isCertified
+
+		this.save()
+		return this 
+	} catch(err) { return err }
+}
+
+userSchema.methods.toggleHasPhone = function() {
+	try {
+		this.hasCertifiedPhone = !this.hasCertifiedPhone
+
+		this.save()
+		return this
+	} catch(err) { return err }
+}
+
+userSchema.methods.toggleHasMail = function() {
+	try {
+		this.hasCertifiedMail = !this.hasCertifiedMail
+
+		this.save()
+		return this
+	} catch(err) { return err }
+}
+
+userSchema.methods.setIsOnline = function() {
+	try {
+		this.isOnline = true
+
+		this.save()
+		return this
+	} catch(err) { return err }
+}
+
+userSchema.methods.setIsOffline = function() {
+	try {
+		this.isOnline = false
+
+		this.save()
+		return this
+	} catch(err) { return err }
 }
 
 userSchema.index({ location: '2dsphere'})

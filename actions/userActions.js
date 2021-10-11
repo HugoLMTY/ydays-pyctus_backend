@@ -59,6 +59,57 @@ class userActions {
 			res.status(200).send(user)
 		} catch(err) { this.handleErrp(err, res) }
 	}
+
+	async deactivateUser(userId, res) {
+		this.log('BAN USER')
+		try {
+			const user = await dataService.getUserById(userId)
+
+			user.posts.forEach(p => {
+				p.setInactive()
+			})
+
+			user.channels.forEach(c => {
+				c.setInactive()
+			})
+
+			user.events.forEach(e => {
+				e.setInactive()
+			})
+
+			user.isActive = false
+
+			await user.save()
+			res.status(200).send(user)
+		} catch(err) { this.handleError(err, res) }
+	}
+
+	async banUser(userId, banReason, res) {
+		this.log('BAN USER')
+		try {
+			const user = await dataService.getUserById(userId)
+
+			user.posts.forEach(p => {
+				p.setInactive()
+			})
+
+			user.channels.forEach(c => {
+				c.setInactive()
+			})
+
+			user.events.forEach(e => {
+				e.setInactive()
+			})
+
+			user.isActive = false
+			user.isBan = true
+			user.banReason = banReason
+			user.desc = 'J\'ai été banni, huez moi'
+
+			await user.save()
+			res.status(200).send(user)
+		} catch(err) { this.handleError(err, res) }
+	}
 }	
 
 module.exports = new userActions()

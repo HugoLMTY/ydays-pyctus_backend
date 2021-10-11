@@ -21,11 +21,16 @@ class postActions {
 			const user = await dataService.getUserById(userId)
 			const post = await dataService.createPost(userId, datas)
 
-			user.posts.push(post)
+
+			let newPost = {
+				post,
+				postedAt: new Date(),
+				isShared: false,
+			}
+			user.posts.push(newPost)
 			await user.save()
 
-			return post
-			
+			res.status(200).send(post)			
 		} catch(err) { this.handleError(err, res) }
 	}
 	

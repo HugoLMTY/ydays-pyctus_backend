@@ -1,8 +1,11 @@
 const actions = require('../actions/postActions')
 
 exports.createPost = (req, res) => {
+	const { userId } = req.params
 	const { authorId, datas } = req.body
-	actions.createPost(authorId, datas, res)
+
+	if (userId === authorId) actions.createPost(authorId, datas, res)
+	else res.status(403).send('unauthorized')
 }
 
 exports.getAllPosts = (req, res) => {
@@ -16,20 +19,23 @@ exports.getPostById = (req, res) => {
 }
 
 exports.getPostsByAuthorId = (req, res) => {
-	const { authorId } = req.params
-	actions.getPostsByAuthorId(authorId, res)
+	const { userId } = req.params
+	actions.getPostsByAuthorId(userId, res)
 }
 
 exports.updatePostById = (req, res) => {
 	// Ajouter une comparaison currentUser: userId / post.ownerId
 	// const { userId, postId, changes } = req.body
 	// Skip si admin / allowed
-
-	const { postId, changes } = req.body
+	const { postId } = req.params
+	const { changes } = req.body
 	actions.updatePostById(postId, changes, res)
 }
 
 exports.updatePostsByAuthorId = (req, res) => {
+	const { userId } = req.params
 	const { authorId, changes } = req.body
-	actions.updatePostsByAuhtorId(authorId, changes, res)
+
+	if (userId === authorId) actions.updatePostsByAuhtorId(authorId, changes, res)
+	else res.status(403).send('unauthorized')
 }

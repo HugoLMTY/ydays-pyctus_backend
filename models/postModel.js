@@ -5,7 +5,7 @@ const ObjectId = Schema.Types.ObjectId
 
 const postSchema = new Schema({
 
-	author:		{ type: ObjectId, ref: 'User'	},
+	author:		{ type: ObjectId, ref: 'User', required: true},
 
 	isActive:	{ type: Boolean, default: true },
 
@@ -15,27 +15,27 @@ const postSchema = new Schema({
 	hasImages:	{ type: Boolean	, default: false},
 	images:		[{ type: String	}],
 
-	createdAd:	{ type: Date, default: new Date()	},
-	postedAt: 	{ type: Date	},
+	createdAd:	{ type: Date, default: new Date() },
+	postedAt: 	{ type: Date },
 
-	differed:	{ type: Boolean, default: false		},
-	toPostAt:	{ type: Date	},
+	differed:	{ type: Boolean, default: false	},
+	toPostAt:	{ type: Date },
 
 	postAs: { type: String, enum: [
-		'staff',
-		'cursus',
 		'student',
+		'cursus',
+		'staff',
 		'bde/bds',
 		'angel',
 	], default: 'student'},
 
 	target: {
 
-		group: 		{ type: ObjectId, ref: 'Group'	},
 		isGroup:	{ type: Boolean, default: false	},
+		group: 		{ type: ObjectId, ref: 'Group'	},
 
-		channel:	{ type: ObjectId, ref: 'Channel'},
 		isChannel:	{ type: Boolean, default: false	},
+		channel:	{ type: ObjectId, ref: 'Channel'},
 
 		level: [{
 			b1:	{ type: Boolean, default: true },
@@ -86,6 +86,44 @@ const postSchema = new Schema({
 	}]
 
 })
+
+postSchema.methods.toggleLock = function() {
+	try {
+		const state = this.allowComments === true && this.allowReactions === true
+	
+		this.allowComments 	= !state
+		this.allowReactions	= !state
+	
+		this.save()
+		return this
+	} catch(err) { return err }
+}
+
+postSchema.methods.toggleActive = function() {
+	try {
+		this.isActive = !this.isActive
+
+		this.allowComments 	= this.isActive
+		this.allowReactions = this.isActive
+
+		this.save()
+
+		return this
+	} catch(err) { return err }
+}
+
+postSchema.methods.setInactive = function() {
+	try {
+		this.isActive = false
+
+		this.allowComments = false
+		this.allowReactions = false
+
+		this.save()
+		return this
+	} catch(err) { return err }
+}
+
 
 postSchema.index({ location: '2dsphere' })
 postSchema.plugin(mongoosePaginate)

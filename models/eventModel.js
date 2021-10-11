@@ -5,17 +5,23 @@ const ObjectId = Schema.Types.ObjectId
 
 const eventSchema = new Schema({
 
-	title: 			{ type: String 	},
-	description: 	{ type: String 	},
-	images:			[{ type: String }],
+	title:	{ type: String, default: 'Nouvel Event' 	},
+	desc:	{ type: String, default: 'Desc de l\'event' },
 
-	type: 		{ type: String	},
-	place:		{ type: String 	},
+	hasImages:	{ type: Boolean, default: false },
+	images:		[{ type: String }],
 
-	isActive:	{ type: Boolean },
+	type:		{ type: String	},
+	location:	{ type: String 	},
+
+	isActive:	{ type: Boolean, default: true		},
+	createdAt:	{ type: Date, default: new Date()	},
+	
+	owner:		{ type: ObjectId, ref: 'User' 		},
 
 	openAt: 	{ type: Date	},
 	closeAt: 	{ type: Date	},
+
 	startAt: 	{ type: Date	},
 	endAt:		{ type: Date	},
 	
@@ -37,12 +43,7 @@ const eventSchema = new Schema({
 
 })
 
-eventSchema.method.toggleActive = function() {
-	this.isActive = !this.isActive
-	return this.isActive()
-}
-
-eventSchema.method.getPlacesLeft = function() {
+eventSchema.methods.getPlacesLeft = function() {
 	var offers = []
 
 	this.offers.forEach(o => {
@@ -62,6 +63,24 @@ eventSchema.method.getPlacesLeft = function() {
 	})
 
 	return offers
+}
+
+eventSchema.methods.toggleActive = function() {
+	try {
+		this.isActive = !this.isActive
+
+		this.save()
+		return this
+	} catch(err) { return err }
+}
+
+eventSchema.methods.setInactive = function() {
+	try {
+		this.isActive = false
+
+		this.save()
+		return this
+	} catch(err) { return err }
 }
 
 eventSchema.index({ location: '2dsphere' })
