@@ -39,7 +39,7 @@ class userActions {
 			const user = await dataService.getUserByEmail(email)
 
 			res.status(200).send(user)
-		} catch(err) { this.handleErrp(err, res) }
+		} catch(err) { this.handleError(err, res) }
 	}
 
 	async createUser(datas, res) {
@@ -48,7 +48,7 @@ class userActions {
 			const user = await dataService.createUser(datas)
 
 			res.status(200).send(user)
-		} catch(err) { this.handleErrp(err, res) }
+		} catch(err) { this.handleError(err, res) }
 	}
 
 	async updateUserById(userId, changes, res) {
@@ -57,7 +57,7 @@ class userActions {
 			const user = await dataService.updateUserById(userId, changes)
 
 			res.status(200).send(user)
-		} catch(err) { this.handleErrp(err, res) }
+		} catch(err) { this.handleError(err, res) }
 	}
 
 	async deactivateUser(userId, res) {

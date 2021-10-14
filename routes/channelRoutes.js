@@ -10,4 +10,10 @@ router.route('/all')
 router.route('/create/:userId')
 	.post(channelController.createChannel)
 
+router.route('/id/:channelId')
+	.get(channelController.getChannelById)
+	
+router.route('/:channelUrl')
+	.get(channelController.getChannelByUrl)
+
 module.exports = router

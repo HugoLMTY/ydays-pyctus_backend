@@ -4,15 +4,14 @@ const Schema = mongoose.Schema
 const ObjectId = Schema.Types.ObjectId
 
 const canvaSchema = new Schema({
-
 	title: 		{ type: String },
 	content: 	{ type: String },
 
 	isActive:	{ type: Boolean, default: true },
 
-	onwer:		{ type: ObjectId, ref: 'User', required: true },
-	createdAt:	{ type: Date },
-	updatedAt:	{ type: Date },
+	owner:		{ type: ObjectId, ref: 'User', required: true },
+	createdAt:	{ type: Date, default: new Date() },
+	updatedAt:	{ type: Date, default: new Date() },
 
 	child: 		[{ type: ObjectId, ref: 'Canva', default: null }],
 	parent: 	{ type: ObjectId, ref: 'Canva', default: null },
@@ -24,19 +23,18 @@ const canvaSchema = new Schema({
 
 	height:		{ type: Number },
 	width: 		{ type: Number },
-	
 })
 
-canvaSchema.methods.getDepth = function() {
-	let count
+// canvaSchema.methods.getDepth = function() {
+// 	let count
+	
+// 	while (this.parent) {
+// 		this = this.parents
+// 		count++
+// 	}
 
-	while (this.parent) {
-		this = this.parents
-		count++
-	}
-
-	return count
-}
+// 	return count
+// }
 
 canvaSchema.methods.checkDepth = function(userMaxDepth) {
 	return this.getDepth < userMaxDepth

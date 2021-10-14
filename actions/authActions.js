@@ -8,6 +8,7 @@ class authActions {
 	}
 
 	handleError(status, res) {
+		this.log(`ERROR ${status}`)
 		let err = ''
 
 		switch (status) {
@@ -29,12 +30,14 @@ class authActions {
 				break
 		}
 
+		// console.log(res)
+
 		return res 
 		? res.status(status).send(err) 
 		: null
 	}
 
-	async loginUser(datas, res) {
+	async  loginUser(datas, res) {
 		this.log('LOGIN USER')
 		const {
 			email,
@@ -43,6 +46,7 @@ class authActions {
 
 		try {
 			const user = await dataService.getUserByEmail(email)
+			console.log(user)
 			
 			if (!user) 
 				return this.handleError(404, res)
@@ -53,7 +57,9 @@ class authActions {
 			if (!await user.comparePassword(password))
 				return this.handleError(401, res)
 			
-			user.setIsOnline()
+			// user.isOnline = true
+			// user.save()
+
 			res.status(200).send(user)
 		} catch(err) { this.handleError(500, res) }
 	}

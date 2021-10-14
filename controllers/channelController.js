@@ -17,3 +17,8 @@ exports.getChannelById = (req, res) => {
 	const { channelId } = req.params
 	actions.getChannelById(channelId, res)
 }
+
+exports.getChannelByUrl = (req, res) => {
+	const { channelUrl } = req.params
+	actions.getChannelByUrl(channelUrl, res)
+}

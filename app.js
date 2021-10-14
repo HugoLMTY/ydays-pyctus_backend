@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const router = express.Router()
+const cors = require('cors')
 const bodyParser = require('body-parser')
 
 
@@ -11,6 +11,7 @@ mongoose.connect(url, { useNewUrlParser: true })
     .then(() => console.log('Connected to DB'))
     .catch(error => console.log(error));
 
+app.use(cors())
 app.use(bodyParser.json({ limit: '50mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
@@ -19,12 +20,14 @@ const user = require('./routes/userRoutes')
 const post = require('./routes/postRoutes')
 const event = require('./routes/eventRoutes')
 const chan = require('./routes/channelRoutes')
+const canva = require('./routes/canvaRoutes')
 
 app.use('/api/auth', auth)
 app.use('/api/users', user)
 app.use('/api/posts', post)
 app.use('/api/events', event)
 app.use('/api/channels', chan)
+app.use('/api/canvas', canva)
 
 
 require('./services/bootService')

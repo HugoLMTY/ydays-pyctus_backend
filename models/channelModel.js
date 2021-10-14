@@ -8,6 +8,8 @@ const channelSchema = new Schema({
 	desc: 	{ type: String, default: 'Description du channel' },
 	icon:	{ type: String },
 
+	url:	{ type: String },
+
 	owner:		{ type: ObjectId, ref: 'User'		},
 	createdAt:	{ type: Date, default: new Date()	},
 

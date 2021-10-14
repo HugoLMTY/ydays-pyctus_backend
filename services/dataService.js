@@ -2,11 +2,22 @@ const User 		= require('../models/userModel')
 const Post 		= require('../models/postModel')
 const Channel 	= require('../models/channelModel')
 const Event 	= require('../models/eventModel')
+const Canva 	= require('../models/canvaModel')
 
-const populateUser = `posts.post channels friends.sent friends.received friends.accepted follows.following.user follows.followed.user`
-const populatePost = `author target.group target.channel comments.users comments.reactions.user reactions.user`
-const populateEvent = `owner participants.user`
-const populateChannel = `author admins.user admins.from members.user posts.post`
+const populateUser 		= `posts.post channels friends.sent friends.received friends.accepted follows.following.user follows.followed.user canvas.canva`
+
+const populatePost 		= `author comments.users comments.reactions.user reactions.user`
+
+const populateEvent 	= `owner participants.user`
+
+const populateChannel 	= `owner admins.user admins.from members.user posts`
+const deepPopulateChannel = {
+	path: 'posts',
+	populate: [{
+		path: 'author'
+	}]
+}
+const populateCanva		= `child parent`
 
 const bcrypt = require('bcrypt')
 
@@ -44,7 +55,7 @@ class dataService {
 		//#endregion
 
 		//#region ------------ GET
-		async getAllUsers(params = {}, populated = true) {
+		getAllUsers(params = {}, populated = true) {
 			const query = User.find(params)
 
 			return !populated ? query : query
@@ -61,7 +72,7 @@ class dataService {
 
 		}
 
-		async getUserByEmail(email, populated = true) {
+		getUserByEmail(email, populated = true) {
 			const query = User.findOne({ email })
 
 			return !populated ? query : query
@@ -71,8 +82,8 @@ class dataService {
 		// #endregion
 
 		//#region ------------ UPDATE
-		async updateUserById(id, changes, populated = true) {
-			const query = await User.findByIdAndUpdate(id, changes)
+		 updateUserById(id, changes, populated = true) {
+			const query = User.findByIdAndUpdate(id, changes)
 
 			return !populated ? query : query
 				.populate(populateUser) 
@@ -131,25 +142,27 @@ class dataService {
 		//#endregion
 
 		//#region GET
-		async getAllPosts(params, populated = true) {
-			const query = await Post.find(params)
+		getAllPosts(params = {}, populated = true) {
+			const query = Post.find(params)
 
 			return !populated ? query : query
-				.populate(fields)
+				.populate("author")
 				.exec()
 		}
 
-		async getPostById(postId, populated = true) {
-			const query = await Post.findById(postId)
+		getPostById(postId, populated = true) {
+			const query = Post.findById(postId)
+
+			// console.log(query)
 
 			return !populated ? query : query
-				.populate(fields)
+				.populate("author")
 				.exec()
 
 		}
 
-		async getPostsByAuthorId(authorId, populated = true) {
-			const query = await Post.find({ author: authorId})
+		getPostsByAuthorId(authorId, populated = true) {
+			const query = Post.find({ author: authorId})
 				
 				return !populated ? query : query
 					.populate(populatePost)
@@ -158,17 +171,17 @@ class dataService {
 		//#endregion
 
 		//#region UPDATE
-		async updatePostById(postId, changes, populated = true) {
+		updatePostById(postId, changes, populated = true) {
 
-			const query = await Post.findByIdAndUpdate(postId, changes)
+			const query = Post.findByIdAndUpdate(postId, changes)
 
 			return !populated ? query : query
 				.populate(populatePost)
 				.exec()
 		}
 
-		async updatePostsByAuthorId(authorId, changes, populated = true) {
-			const query = await Post.updateMany({ author: authorId }, changes)
+		updatePostsByAuthorId(authorId, changes, populated = true) {
+			const query = Post.updateMany({ author: authorId }, changes)
 
 			return !populated ? query : query
 				.populate(populatePost)
@@ -226,6 +239,15 @@ class dataService {
 			return !populated ? query : query 
 			.populate(populateChannel)
 			.exec()
+		}
+
+		async getChannelByUrl(channelUrl, populated = true) {
+			const query = Channel.findOne({ url: channelUrl })
+
+			return !populated ? query : query
+				.populate(populateChannel)
+				.populate(deepPopulateChannel)
+				.exec()
 		}
 
 		async getChannelsByOwnerId(ownerId, populated = true) {
@@ -302,7 +324,7 @@ class dataService {
 		//#endregion
 
 		//#region GET
-		async getAllEvents(params = {}, populated = true) {
+		getAllEvents(params = {}, populated = true) {
 			const query = Event.find(params)
 
 			return !populated ? query : query
@@ -310,7 +332,7 @@ class dataService {
 				.exec()
 		}
 
-		async getEventById(eventId, populated = true) {
+		getEventById(eventId, populated = true) {
 			const query = Event.findById(eventId)
 
 			return !populated ? query : query
@@ -318,7 +340,7 @@ class dataService {
 				.exec()
 		}
 
-		async getEventsByOwnerId(ownerId, populated = true) {
+		getEventsByOwnerId(ownerId, populated = true) {
 			const query = Event.find({ owner: ownerId })
 
 			return !populated ? query : query
@@ -328,16 +350,16 @@ class dataService {
 		//#endregion
 
 		//#region UPDATE
-		async updateEventById(eventId, changes, populated = true) {
-			const query = await Event.findByIdAndUpdate(eventId, changes)
+		updateEventById(eventId, changes, populated = true) {
+			const query = Event.findByIdAndUpdate(eventId, changes)
 
 			return !populated ? query : query
 				.populate(populateEvent)
 				.exec()
 		}
 
-		async updateEventsByOwnerId(ownerId, changes, populated = true) {
-			const query = await Event.updateMany({ owner: ownerId}, changes)
+		updateEventsByOwnerId(ownerId, changes, populated = true) {
+			const query = Event.updateMany({ owner: ownerId}, changes)
 
 			return !populated ? query : query
 				.populate(populateEvent)
@@ -346,6 +368,67 @@ class dataService {
 		//#endregion
 	//#endregion
 
+	//#region ------------ CANVA
+		//#region CREATE
+		async createCanva(userId, datas) {
+			const {
+				title,
+				content,
+			} = datas
+
+			let colors = [
+				'red',
+				'blue',
+				'green',
+				'purple',
+				'yellow',
+				'pink',
+				'brown',
+				'cyan',
+				'turquoise',
+				'orange'
+			]
+
+			const index = Math.floor(Math.random() * (colors.length - 0) + 0)
+
+			let color = colors[index]
+
+			try {
+				const newCanva = new Canva({
+					title,
+					content,
+
+					owner: userId,
+					
+					color,
+
+					posX: 10,
+					posY: 10,
+
+					height: 150,
+					width: 150,
+				})
+
+				const canva = await newCanva.save()
+				return canva
+
+			} catch(err) { this.handleError(err) }
+		}
+		//#endregion
+
+		//#region GET
+		getCanvaById(canvaId, populate = true) {
+			const query = Canva.findById(canvaId)
+
+			return !populate ? query : query
+				.populate(populateCanva)
+				.exec()
+		}
+		//#endregion
+
+		//#region UPDATE
+		//#endregion
+	//#endregion
 
 
 	//#region ------------ TYPE

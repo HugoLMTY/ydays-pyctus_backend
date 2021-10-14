@@ -9,8 +9,8 @@ const todoSchema = new Schema({
 	decs: 	{ type: String },
 
 	owner:		{ type: ObjectId, ref: 'User' },
-	createdAt:	{ type: String },
-	updatedAt:	{ type: String },
+	createdAt:	{ type: Date, default: new Date() },
+	updatedAt:	{ type: Date, default: new Date() },
 
 	isActive:	{ type: Boolean, default: true	},
 
@@ -34,7 +34,7 @@ const todoSchema = new Schema({
 	}],
 
 
-	isPublic:		{ type: String },
+	isPublic:		{ type: Boolean, default: false },
 	contributors:	{
 		user:	{ type: ObjectId, ref: 'User', required: true },
 		since:	{ type: Date },

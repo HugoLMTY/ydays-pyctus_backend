@@ -39,7 +39,7 @@ const userSchema = new Schema({
 
 	situation: {
 		studentSince: 	{ type: Date   	},
-		level:			{ type: String, enum: ['b1', 'b2', 'b3', 'm1', 'm2', 'staff' ]},
+		level:			{ type: String, enum: ['b1', 'b2', 'b3', 'm1', 'm2' ]},
 		cursus:			{ type: String, enum: ['info', 'crea', 'marcom', 'audiovisuel', '3d' ]},
 		campus:			{ type: String, enum: ['lille', 'paris', 'rennes', 'nantes', 'lyon', 'bordeaux', 'montpellier', 'nice', 'toulouse', 'aix', 'rabat', 'casablanca']}
 	},
@@ -90,14 +90,14 @@ const userSchema = new Schema({
 		}
 	}],
 
-	canvas: [{
-		maxDepth:	{ type: Number, default: 10			},
-		canva:		{ type: ObjectId, ref: 'Canva' 		}
-	}],
+	canvas: {
+		maxDepth:		{ type: Number },
+		canva: 			[{ type: ObjectId, ref: 'Canva' }]
+	},
 
 	todoList: [{ 
 		todo:		{ type: ObjectId, ref: 'Todo' 	},
-		maxItems:	{ type: Number, default: 5 		} 
+		maxItems:	{ type: Number } 
 	}],
 
 })

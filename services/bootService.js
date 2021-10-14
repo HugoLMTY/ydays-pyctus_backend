@@ -1,3 +1,4 @@
+const { createdCanva } = require("./dataService")
 const dataService = require("./dataService")
 
 // const id = '61606061904cd5dd814d32b7' // HUGO LM
@@ -30,7 +31,6 @@ async function toggleAdmin() {
 	console.log(user.toggleAdmin())
 }
 //#endregion
-
 
 //#region POST
 async function lockPost(userId) {
@@ -71,6 +71,28 @@ async function toggleActiveEvent(userId) {
 }
 //#endregion
 
+//#region CANVA
+
+async function checkCanvaDepth() {
+	const user = await dataService.getUserById(id)
+
+	console.log(user.canvas.maxDepth)
+
+}
+
+function rainbow() {
+	let datas = {
+		title: 'Test canva',
+		content: 'Content canva'
+	}
+
+	let i = 0
+	while (i < 100) {
+		createdCanva(id, datas)
+		i++
+	}
+}
+//#endregion
 
 
 // #region ----- USER
@@ -88,4 +110,9 @@ async function toggleActiveEvent(userId) {
 //#region ----- CHANNEL
 	// toggleActiveChannel(id)
 	// toggleActiveChannel(id)
+//#endregion
+
+//#region CANVA
+	// checkCanvaDepth()
+	// rainbow()
 //#endregion

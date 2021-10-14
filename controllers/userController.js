@@ -17,6 +17,7 @@ exports.getUserByEmail = (req, res) => {
 
 exports.createUser = (req, res) => {
 	const datas = req.body
+	// console.log(datas)
 	actions.createUser(datas, res)
 }
 
