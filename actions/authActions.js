@@ -1,4 +1,5 @@
 const dataService = require('../services/dataService')
+const passport = require('../passport')
 
 class authActions {
 
@@ -7,8 +8,10 @@ class authActions {
 		if (isActive) console.log(`---- ${target} ----`) 
 	}
 
-	handleError(status, res) {
+	handleError(status, error, res) {
 		this.log(`ERROR ${status}`)
+
+		if (error) this.log(error)
 		let err = ''
 
 		switch (status) {
@@ -30,8 +33,6 @@ class authActions {
 				break
 		}
 
-		// console.log(res)
-
 		return res 
 		? res.status(status).send(err) 
 		: null
@@ -46,22 +47,25 @@ class authActions {
 
 		try {
 			const user = await dataService.getUserByEmail(email)
-			console.log(user)
-			
+			let err = null
+
 			if (!user) 
-				return this.handleError(404, res)
+				return this.handleError(404, err, res)
 				
 			if (user.isBanned) 
-				return this.handleError(403, res)
+				return this.handleError(403, err, res)
 			
 			if (!await user.comparePassword(password))
-				return this.handleError(401, res)
+				return this.handleError(401, err, res)
 			
 			// user.isOnline = true
 			// user.save()
 
-			res.status(200).send(user)
-		} catch(err) { this.handleError(500, res) }
+			const pport = passport.generateAuthToken(user)
+			console.log(pport)
+			
+			res.status(200).send({token: pport, user})
+		} catch(err) { this.handleError(500, err, res) }
 	}
 
 	async logoutUser(userId, res) {
@@ -73,7 +77,7 @@ class authActions {
 			user.setIsOffline()
 
 			res.status(200).send(user)
-		} catch(err) { this.handleError(500, res) }
+		} catch(err) { this.handleError(500, err, res) }
 	}
 }
 

@@ -9,14 +9,21 @@ const userSchema = new Schema({
 
 	firstName: 	{ type: String, required: true },
 	lastName: 	{ type: String, required: true },
+
 	sex:		{ type: String	},
 	birthdate:	{ type: Date	},
+
 	phone:		{ type: Number	},
+	email: 		{ type: String, required: true, unique: true },
+	password: 	{ type: String, required: true },
+	
 	desc:		{ type: String	},
 
-	email: 		{ type: String, required: true },
-	password: 	{ type: String, required: true },
-
+	preferences: {
+		sort: 	{ type: String,	enum: ['hot', 'new'],	 default: 'hot'  },
+		theme:	{ type: String,	enum: ['light', 'dark'], default: 'light'},
+	},
+	
 	isOnline:	{ type: Boolean },
 
 	isActive: 		{ type: Boolean, default: true 	},
@@ -44,11 +51,17 @@ const userSchema = new Schema({
 		campus:			{ type: String, enum: ['lille', 'paris', 'rennes', 'nantes', 'lyon', 'bordeaux', 'montpellier', 'nice', 'toulouse', 'aix', 'rabat', 'casablanca']}
 	},
 
-	posts: [{
-		post:		{ type: ObjectId, ref: 'Post' },
-		postedAt:	{ type: Date 	},
-		isShared:	{ type: Boolean },
-	}],
+	posts: {
+		created: [{
+			post:		{ type: ObjectId, ref: 'Post' },
+			postedAt:	{ type: Date 	},
+			isShared:	{ type: Boolean },
+		}],
+		liked:	[{
+			post:		{ type: ObjectId, ref: 'Post' },
+			likedAt:	{ type: Date }
+		}]
+	},
 
 	channels: [{ type: ObjectId, ref: 'Channel' }],
 
@@ -59,8 +72,9 @@ const userSchema = new Schema({
 	},
 
 	subs: [{
-		since:  { type: Date },
-		rank: 	{ type: Number }
+		channel:	{ type: ObjectId, ref: 'Channel'	},
+		since:  	{ type: Date, 	default: new Date() },
+		rank: 		{ type: Number, default: 0 			},
 	}],
 
 	follows: {

@@ -17,7 +17,6 @@ exports.getUserByEmail = (req, res) => {
 
 exports.createUser = (req, res) => {
 	const datas = req.body
-	// console.log(datas)
 	actions.createUser(datas, res)
 }
 
@@ -25,4 +24,10 @@ exports.updateUserById = (req, res) => {
 	const { userId } = req.params
 	const changes = req.body
 	actions.updateUserById(userId, changes, res)
+}
+
+exports.updateUserChannelSub = (req, res) => {
+	const { userId } = req.params
+	const { channelId, action} = req.body
+	actions.updateUserChannelSub(userId, channelId, action, res)
 }

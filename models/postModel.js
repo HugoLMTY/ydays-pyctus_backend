@@ -11,12 +11,19 @@ const postSchema = new Schema({
 
 	title: 		{ type: String, default: 'Nouveau post'		},
 	content:	{ type: String, default: 'Contenu du post'	},
+	views:		{ type: Number, default: 0					},
 
-	hasImages:	{ type: Boolean	, default: false},
+	hasImages:	{ type: Boolean	, default: false },
 	images:		[{ type: String	}],
 
-	createdAd:	{ type: Date, default: new Date() },
-	postedAt: 	{ type: Date },
+	hasChannel:	{ type: Boolean, default: false  },
+	channel:	{ type: ObjectId, ref: 'Channel' },
+
+	hasGroup:	{ type: Boolean, default: false  },
+	group:		{ type: ObjectId, ref: 'Group' 	 },
+
+	createdAt:	{ type: Date, default: new Date() },
+	postedAt: 	{ type: Date, default: new Date() },
 
 	differed:	{ type: Boolean, default: false	},
 	toPostAt:	{ type: Date },
@@ -27,15 +34,9 @@ const postSchema = new Schema({
 		'staff',
 		'bde/bds',
 		'angel',
-	], default: 'student'},
+	], default: 'student' },
 
 	target: {
-
-		isGroup:	{ type: Boolean, default: false	},
-		group: 		{ type: ObjectId, ref: 'Group'	},
-
-		isChannel:	{ type: Boolean, default: false	},
-		channel:	{ type: ObjectId, ref: 'Channel'},
 
 		level: [{
 			b1:	{ type: Boolean, default: true },
@@ -71,6 +72,7 @@ const postSchema = new Schema({
 
 	allowComments:	{ type: Boolean, default: true },
 	comments: [{
+		date:		{ type: Date, default: new Date() },
 		user: 		{ type: ObjectId, ref: 'User' },
 		content: 	{ type: String	},
 		reactions:	[{
@@ -86,6 +88,15 @@ const postSchema = new Schema({
 	}]
 
 })
+
+postSchema.methods.incViews = function() {
+	try {
+		this.views++
+
+		this.save()
+		return this
+	} catch(err) { return err }
+}
 
 postSchema.methods.toggleLock = function() {
 	try {

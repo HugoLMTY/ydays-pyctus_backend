@@ -47,6 +47,40 @@ async function toggleActivePost(userId) {
 	console.log(post.toggleActive())
 }
 
+async function getPostScore(postId) {
+	const post = await dataService.getPostById(postId)
+	let score = 0
+
+	let dateMult 		= 0.5
+	let commentMult		= 1
+	let reactionMult 	= 1
+
+	const datePoint = (new Date().getTime() - new Date(post.postedAt).getTime()) / 3600 / 60 / 24
+	const reactionPoint = post.reactions.length
+	const commentPoint = post.comments.length
+
+	score = ( (datePoint * dateMult) + (reactionPoint * reactionMult) + (commentPoint * commentMult)) / 3
+	
+	console.log(score)
+}
+
+async function getPostTimeAgo(postId) {
+	const post = await dataService.getPostById(postId)
+
+	let date = new Date().getTime()
+	let postedAt = new Date(post.postedAt).getTime()
+	
+	let diff = (date - postedAt) / 3600 / 60 / 24
+
+	switch (true) {
+		case diff > 24:
+			diff /= 24
+			break
+	}
+
+	console.log(diff)
+}
+
 //#endregion
 
 //#region CHANNEL
@@ -103,6 +137,8 @@ function rainbow() {
 //#endregion
 
 //#region ----- POST
+	// getPostTimeAgo('6164266e19660aedcf942a0f')
+	// getPostScore('6164266e19660aedcf942a0f')
 	// lockPost(id)
 	// toggleActivePost(id)
 //#endregion

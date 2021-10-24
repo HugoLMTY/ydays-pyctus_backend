@@ -4,11 +4,29 @@ const Channel 	= require('../models/channelModel')
 const Event 	= require('../models/eventModel')
 const Canva 	= require('../models/canvaModel')
 
-const populateUser 		= `posts.post channels friends.sent friends.received friends.accepted follows.following.user follows.followed.user canvas.canva`
+const populateUser 		= `posts.created posts.liked channels friends.sent friends.received friends.accepted follows.following.user follows.followed.user canvas.canva subs.channel`
+const deepPopulateUser	= {
+	path: 'subs',
+	populate: [{
+		path: 'channel.posts',
+	}]
+}
 
-const populatePost 		= `author comments.users comments.reactions.user reactions.user`
+const populatePost 		= `author comments.user comments.reactions.user reactions.user channel`
+const deepPopulatePost	= {
+	path: '',
+	populate: [{
+		path: ''
+	}]
+}
 
 const populateEvent 	= `owner participants.user`
+const deepPopulateEvent = {
+	path: '',
+	populate: [{
+		path: ''
+	}]
+}
 
 const populateChannel 	= `owner admins.user admins.from members.user posts`
 const deepPopulateChannel = {
@@ -18,6 +36,12 @@ const deepPopulateChannel = {
 	}]
 }
 const populateCanva		= `child parent`
+const deepPopulateCanva = {
+	path: '',
+	populate: [{
+		path: ''
+	}]
+}
 
 const bcrypt = require('bcrypt')
 
@@ -26,6 +50,8 @@ class dataService {
 	handleError(err) { 
 		const isActive = true
 		if (isActive) console.log(err) 
+
+		return err
 	}
 
 	//#region ------------ USER 
@@ -49,6 +75,7 @@ class dataService {
 				})
 
 				const user = await newUser.save()
+				console.log(user)
 				return user
 			} catch(err) { this.handleError(err) }
 		}
@@ -68,6 +95,7 @@ class dataService {
 
 			return !populated ? query : query
 				.populate(populateUser)
+				.populate(deepPopulateUser)
 				.exec()
 
 		}
@@ -78,6 +106,18 @@ class dataService {
 			return !populated ? query : query
 				.populate(populateUser)
 				.exec()
+		}
+
+		getAllUserPosts(userId, params = {}) {
+			const query = User
+				.findById(userId, params)
+				.populate({
+					path: 'posts.created',
+					populate: [{ populatedPost }]
+				})
+				.exec()
+
+			return query.posts.created
 		}
 		// #endregion
 
@@ -146,7 +186,7 @@ class dataService {
 			const query = Post.find(params)
 
 			return !populated ? query : query
-				.populate("author")
+				.populate(populatePost)
 				.exec()
 		}
 
@@ -156,7 +196,7 @@ class dataService {
 			// console.log(query)
 
 			return !populated ? query : query
-				.populate("author")
+				.populate(populatePost)
 				.exec()
 
 		}
@@ -168,6 +208,20 @@ class dataService {
 					.populate(populatePost)
 					.exec()
 		}
+
+		async getAllFeedPostByUserId(userId, limit = 50, populated = true) {
+			const user = await this.getUserById(userId)	
+			let postList = []
+
+			user.subs.forEach(async sub => {
+				const list = await this.getAllChannelPosts(sub.channel)
+				postList.push(list)
+			})
+
+			user.friends.accepted.forEach(async friend => {
+				// const list = await this.
+			})
+		}
 		//#endregion
 
 		//#region UPDATE
@@ -177,6 +231,7 @@ class dataService {
 
 			return !populated ? query : query
 				.populate(populatePost)
+				.populate(deepPopulatePost)
 				.exec()
 		}
 
@@ -185,6 +240,7 @@ class dataService {
 
 			return !populated ? query : query
 				.populate(populatePost)
+				.populate(deepPopulatePost)
 				.exec()
 		}
 		//#endregion
@@ -254,8 +310,18 @@ class dataService {
 			const query = Channel.find({ owner: ownerId })
 
 			return !populated ? query : query 
-			.populate(populateChannel)
-			.exec()
+				.populate(populateChannel)
+				.populate(deepPopulateChannel)
+				.exec()
+		}
+
+		async getAllChannelPosts(channelId, params = {}, populated = true) {
+			const query = Channel.find({ _id: channelId, ...params})
+			
+			return !populated ? query : query 
+				.populate(populateChannel)
+				.populate(deepPopulateChannel)
+				.exec()
 		}
 		//#endregion
 

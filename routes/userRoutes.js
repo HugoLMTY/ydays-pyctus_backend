@@ -16,6 +16,10 @@ router.route('/email/:userEmail')
 
 router.route('/update/:userId')
 	.post(userController.updateUserById)
+
+
+router.route('/subscribe/:userId')
+	.post(userController.updateUserChannelSub)
 	
 
 router.route('/:userId')

@@ -19,6 +19,27 @@ router.route('/update/author/:userId')
 router.route('/update/:postId')
 	.post(postController.updatePostById)
 
+
+
+
+
+
+//#region --------------- FEED
+
+router.route('/feed')
+	.get(postController.getFeedPostList)
+	.post(postController.getFeedPostList)
+
+router.route('/feed/:userId')
+	.get(postController.getFeedPostListByUserId)
+	.post(postController.getFeedPostListByUserId)
+
+//#endregion
+
+
+//#region --------------- GET BY ID
+
 router.route('/:postId')
 	.get(postController.getPostById)
+//#endregion
 module.exports = router
