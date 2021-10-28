@@ -21,7 +21,7 @@ class feedActions {
 			const postList = await dataService.getAllPosts({ isActive: true })
 			let list = []
 
-			// Ajouter un algo de scorging
+			// Ajouter un algo de scoring
 			list = postList
 
 			res.status(200).send(list)
@@ -57,14 +57,14 @@ class feedActions {
 
 			}
 
-			for (let index = 0; index < user.friends.accepted.length; index++) {
-				const friend = user.friends.accepted[i]
-				const list = await dataService.getAllUserPosts(friend._id, params)
+			// for (let index = 0; index < user.friends.accepted.length; index++) {
+			// 	const friend = user.friends.accepted[index]
+			// 	const list = await dataService.getAllUserPosts(friend._id, params)
 
-				list.forEach(p => {
-					postList.push(p)
-				})
-			}
+			// 	list.forEach(p => {
+			// 		postList.push(p)
+			// 	})
+			// }
 
 
 			for (let index = 0; index < postList.length; index++) {
@@ -117,7 +117,6 @@ class feedActions {
 				finalList.push(item.post)
 			}
 			
-			console.log('final: ', finalList.length)
 			res.status(200).send(finalList)
 		} catch(err) { this.handleError(err, res) }
 	}

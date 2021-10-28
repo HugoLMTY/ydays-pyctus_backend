@@ -1,8 +1,11 @@
 const { createdCanva } = require("./dataService")
 const dataService = require("./dataService")
 
-// const id = '61606061904cd5dd814d32b7' // HUGO LM
-const id = '61642327f869de112cff95e3' // NEW USER
+const mongoose = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId
+
+const id = '61606061904cd5dd814d32b7' // HUGO LM
+// const id = '61642327f869de112cff95e3' // NEW USER
 
 
 //#region USER
@@ -30,6 +33,72 @@ async function toggleAdmin() {
 
 	console.log(user.toggleAdmin())
 }
+
+async function checkIsLiked(userId, postId) {
+	const user = await dataService.getUserById(userId)
+	const post = await dataService.getPostById(postId)
+	
+	// let found = false
+
+	// for (let i = 0; i < user.posts.liked.length; i++) {
+	// 	const p = user.posts.liked[i]
+	// 	if (p.post == postId) found = true
+	// }
+
+	var indexU = user.posts.liked
+		.map(function(p) { return p.post.toString() })
+		.indexOf(postId)
+
+	var indexP = post.reactions
+		.map(function(u) { return u.user._id.toString() })
+		.indexOf(userId)
+
+	// console.log(indexU)
+
+	console.log('p: ', indexP)
+	console.log('u :', indexU)
+
+	// post.reactions = [{user: userId, likedAt: new Date()}]
+	// await post.save()
+	// user.posts = {
+	// 	created: [],
+	// 	liked: [{post: postId, likedAt: new Date() }]
+	// }
+	// await user.save()
+}
+
+async function getFriendsList(userId, limit = 5) {
+	const query = { 
+		isActive: true, 
+
+		_id: { $ne: userId },
+
+		"friends.accepted": { $nin: [userId] },
+		"friends.received": { $nin: [userId] },
+		"friends.sent": 	{ $nin: [userId] },
+	}
+
+	const userList 	= await dataService.getAllUsers(query)
+
+	if (userList.length > limit) userList.length = limit
+
+	for (let i = 0; i < userList.length; i++) {
+		const f = userList[i]
+
+		console.log(f.firstName)
+	}
+}
+
+async function checkAlreadyFriends(userId, targetId) {
+
+	const user = await dataService.getUserById(userId)
+	const uIndex = user.friends.sent
+		.map(function(s) { return new ObjectId(s._id); })
+		.indexOf(targetId.toString())
+
+	console.log(uIndex)
+}
+// checkAlreadyFriends('61680818d1d6a3f40c42aadb', '61642327f869de112cff95e3')
 //#endregion
 
 //#region POST
@@ -130,6 +199,8 @@ function rainbow() {
 
 
 // #region ----- USER
+	// getFriendsList(id)
+	// checkIsLiked(id, '6164266e19660aedcf942a0f')
 	// comparePwd('test')
 	// countPosts()
 	// countElements()

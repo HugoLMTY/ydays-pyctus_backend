@@ -54,12 +54,12 @@ const userSchema = new Schema({
 	posts: {
 		created: [{
 			post:		{ type: ObjectId, ref: 'Post' },
-			postedAt:	{ type: Date 	},
+			postedAt:	{ type: Date, default: new Date()	},
 			isShared:	{ type: Boolean },
 		}],
 		liked:	[{
 			post:		{ type: ObjectId, ref: 'Post' },
-			likedAt:	{ type: Date }
+			likedAt:	{ type: Date, default: new Date() }
 		}]
 	},
 
@@ -104,10 +104,10 @@ const userSchema = new Schema({
 		}
 	}],
 
-	canvas: {
-		maxDepth:		{ type: Number },
-		canva: 			[{ type: ObjectId, ref: 'Canva' }]
-	},
+	// canvas: {
+	// 	maxDepth:		{ type: Number },
+	// 	canva: 			[{ type: ObjectId, ref: 'Canva' }]
+	// },
 
 	todoList: [{ 
 		todo:		{ type: ObjectId, ref: 'Todo' 	},

@@ -62,7 +62,9 @@ class authActions {
 			// user.save()
 
 			const pport = passport.generateAuthToken(user)
-			console.log(pport)
+			// console.log(pport)
+
+			await user.setIsOnline()
 			
 			res.status(200).send({token: pport, user})
 		} catch(err) { this.handleError(500, err, res) }

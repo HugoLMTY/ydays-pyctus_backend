@@ -4,12 +4,12 @@ const Channel 	= require('../models/channelModel')
 const Event 	= require('../models/eventModel')
 const Canva 	= require('../models/canvaModel')
 
-const populateUser 		= `posts.created posts.liked channels friends.sent friends.received friends.accepted follows.following.user follows.followed.user canvas.canva subs.channel`
+const populateUser 		= `posts.created posts.liked channels friends.sent friends.received friends.accepted follows.following.user follows.followed.user subs.channel`
 const deepPopulateUser	= {
 	path: 'subs',
 	populate: [{
 		path: 'channel.posts',
-	}]
+	}],
 }
 
 const populatePost 		= `author comments.user comments.reactions.user reactions.user channel`
@@ -113,7 +113,7 @@ class dataService {
 				.findById(userId, params)
 				.populate({
 					path: 'posts.created',
-					populate: [{ populatedPost }]
+					populate: [{ populatePost }]
 				})
 				.exec()
 

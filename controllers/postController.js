@@ -45,7 +45,6 @@ exports.updatePostsByAuthorId = (req, res) => {
 //#region --------------- FEED
 
 exports.getFeedPostList = (req, res) => {
-	console.log(req.body)
 	const { sortType, params } = req.body
 	feedActions.getFeedPostList(sortType, params, res)
 }
