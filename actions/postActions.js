@@ -1,4 +1,6 @@
 const dataService = require('../services/dataService')
+const Post = require('../models/postModel')
+
 
 class postActions {
 
@@ -16,21 +18,36 @@ class postActions {
 	}
 
 	async createPost(userId, datas, res) {
-		this.log('CREATE POST')
+		this.log(`CREATE POST (${userId})`)
 		try {
+			const {
+				title,
+				content,
+				images,
+				channel,
+				differed,
+				toPostAt,
+				postAs,
+				target,
+				allowComments,
+				allowReactions
+			} = datas
+
 			const user = await dataService.getUserById(userId)
-			const post = await dataService.createPost(userId, datas)
 
+			let newPost = new Post({
+				author: userId,
+				...datas
+			})
 
-			let newPost = {
-				post,
-				postedAt: new Date(),
-				isShared: false,
-			}
-			user.posts.push(newPost)
+			const post = await newPost.save()
+
+			user.posts.created.push(post)
+
 			await user.save()
 
-			res.status(200).send(post)			
+			res.status(200).send({user, post})
+
 		} catch(err) { this.handleError(err, res) }
 	}
 	

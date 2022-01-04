@@ -1,4 +1,5 @@
 const dataService = require('../../services/dataService')
+const Post = require('../../models/postModel')
 
 class postActions {
 
@@ -28,6 +29,8 @@ class postActions {
 		? res.status(status).send(error) 
 		: null
 	}
+
+	
 
 	async toggleLikedPost(userId, postId, res) {
 		this.log('TOGGLE LIKED POST')

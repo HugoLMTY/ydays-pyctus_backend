@@ -20,8 +20,9 @@ const userSchema = new Schema({
 	desc:		{ type: String	},
 
 	preferences: {
-		sort: 	{ type: String,	enum: ['hot', 'new'],	 default: 'hot'  },
-		theme:	{ type: String,	enum: ['light', 'dark'], default: 'light'},
+		sort: 	{ type: String,	enum: ['hot', 'new'],	 		default: 'hot' 	 },
+		theme:	{ type: String,	enum: ['light', 'dark'], 		default: 'light' },
+		post:	{ type: String, enum: ['direct', 'differed'], 	default: 'direct'},
 	},
 	
 	isOnline:	{ type: Boolean },

@@ -294,6 +294,7 @@ class dataService {
 
 			return !populated ? query : query 
 			.populate(populateChannel)
+			.populate(deepPopulateChannel)
 			.exec()
 		}
 

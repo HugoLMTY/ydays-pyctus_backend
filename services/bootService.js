@@ -7,7 +7,6 @@ const ObjectId = mongoose.Types.ObjectId
 const id = '61606061904cd5dd814d32b7' // HUGO LM
 // const id = '61642327f869de112cff95e3' // NEW USER
 
-
 //#region USER
 async function countPosts() {
 	const user = await dataService.getUserById(id)

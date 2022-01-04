@@ -22,7 +22,7 @@ const postSchema = new Schema({
 	hasGroup:	{ type: Boolean, default: false  },
 	group:		{ type: ObjectId, ref: 'Group' 	 },
 
-	createdAt:	{ type: Date, default: new Date() },
+	// createdAt:	{ type: Date, default: new Date() },
 	postedAt: 	{ type: Date, default: new Date() },
 
 	differed:	{ type: Boolean, default: false	},
@@ -50,8 +50,8 @@ const postSchema = new Schema({
 			info:		{ type: Boolean, default: true },
 			crea:		{ type: Boolean, default: true },
 			marcom:		{ type: Boolean, default: true },
-			audioviual:	{ type: Boolean, default: true },
-			videoGame:	{ type: Boolean, default: true },
+			audiovi:	{ type: Boolean, default: true },
+			videogame:	{ type: Boolean, default: true },
 		}],
 
 		campus: [{
@@ -87,7 +87,7 @@ const postSchema = new Schema({
 		type:	{ type: String	}
 	}]
 
-})
+}, { timestamps: true })
 
 postSchema.methods.incViews = function() {
 	try {
