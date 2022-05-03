@@ -10,7 +10,7 @@ const userSchema = new Schema({
 	firstName: 	{ type: String, required: true },
 	lastName: 	{ type: String, required: true },
 
-	sex:		{ type: String	},
+	sex:		{ type: String, enum: ['male', 'female']	},
 	birthdate:	{ type: Date	},
 
 	phone:		{ type: Number	},
@@ -114,6 +114,23 @@ const userSchema = new Schema({
 		todo:		{ type: ObjectId, ref: 'Todo' 	},
 		maxItems:	{ type: Number } 
 	}],
+
+	socialMedias: {
+		facebook: 	{ type: String, default: 'JohnDoe' },
+		twitter: 	{ type: String, default: 'JohnDoe' },
+
+		instagram: 	{ type: String, default: 'JohnDoe' },
+
+		linkedin: 	{ type: String, default: 'JohnDoe' },
+		github: 	{ type: String, default: 'JohnDoe' },
+		
+		discord: 	{ type: String, default: 'JohnDoe' },
+
+		reddit: 	{ type: String, default: 'JohnDoe' },
+		spotify: 	{ type: String, default: 'JohnDoe' },
+		twitch: 	{ type: String, default: 'JohnDoe' },
+		steam: 		{ type: String, default: 'JohnDoe' },
+	}
 
 })
 
